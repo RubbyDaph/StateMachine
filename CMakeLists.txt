@@ -12,8 +12,15 @@ find_package(Qt6 REQUIRED COMPONENTS Core Quick Qml Gui)
 
 qt_standard_project_setup(REQUIRES 6.8)
 
+file(GLOB_RECURSE SOURCES "source/*.cpp")
+file(GLOB_RECURSE HEADERS "source/*.h")
+
 qt_add_executable(appStateMachine
     main.cpp
+)
+
+target_include_directories(appStateMachine PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/source
 )
 
 qt_add_qml_module(appStateMachine
