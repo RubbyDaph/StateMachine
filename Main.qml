@@ -37,11 +37,19 @@ Window {
                     ctx.clearRect(0, 0, graphCanvas.width, graphCanvas.height)
 
                     for(var i = 0; i < root.circles.length; i++){
+                        var circle = circles[i]
                         ctx.beginPath()
-                        ctx.arc(root.circles[i].x, root.circles[i].y, root.circles[i].radius, 0, Math.PI * 2)
+                        ctx.arc(circle.x, circle.y, circle.radius, 0, Math.PI * 2)
                         ctx.fillStyle = root.baseColor
+                        ctx.opacity = 0
                         ctx.fill()
                         ctx.stroke()
+
+                        ctx.font = (circle.radius) + "px Arial";
+                        ctx.fillStyle = "black"
+                        ctx.textAlign = "center"
+                        ctx.textBaseline = "middle"
+                        ctx.fillText((i+1).toString(), circle.x, circle.y);
                     }
                 }
                 function addCircle(x, y , radius){
@@ -52,7 +60,7 @@ Window {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: (mouse) =>{
-                        graphCanvas.addCircle(mouse.x, mouse.y, 25)
+                        graphCanvas.addCircle(mouse.x, mouse.y, 20)
                     }
 
                 }
@@ -89,6 +97,28 @@ Window {
                 color: root.baseColor
                 Layout.fillWidth: true
                 Layout.minimumHeight: 163
+                ColumnLayout{
+                    anchors.fill: parent
+                    spacing: 5
+                    CustomButton{
+                        buttonText:"Create Node"
+                        Layout.fillWidth: true
+                        Layout.rightMargin: 50
+                        Layout.leftMargin: 50
+                    }
+                    CustomButton{
+                        buttonText: "Create Connection"
+                        Layout.fillWidth: true
+                        Layout.rightMargin: 50
+                        Layout.leftMargin: 50
+                    }
+                    CustomButton{
+                        buttonText: "Edit Node"
+                        Layout.fillWidth: true
+                        Layout.rightMargin: 50
+                        Layout.leftMargin: 50
+                    }
+                }
             }
             Rectangle{
                 id: fileOptions
