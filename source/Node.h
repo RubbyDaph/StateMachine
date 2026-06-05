@@ -1,36 +1,35 @@
 #pragma once
-#include <QObject>
-#include <QString>
-#include <QList>
-#include <QAbstractListModel>
 
-class Node : public QAbstractListModel
+#include <QObject>
+#include <QAbstractTableModel>
+
+class Node : public QAbstractTableModel
 {
     Q_OBJECT
-    int count = 0;
+
     struct NodeItem
     {
-        int value;
         int id;
 
-        NodeItem(const int &value):
-            value(value),
-            id(++count)
-        {};
+        NodeItem(int count) : id(count) {};
     };
-    QList<NodeItem> nodeList;
-
+    QList<NodeItem> NodeList;
+    QList<QList<int>> matrix;
 public:
-    explicit Node(QObject* parent = nullptr) : QAbstractListModel(parent) {}
-
     int rowCount(const QModelIndex &parent) const override;
+    int columnCount(const QModelIndex &parent) const override;
     QVariant data(const QModelIndex &index, int role) const override;
+    QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
     QHash<int, QByteArray> roleNames() const override;
-    enum roles
+
+    void AddNode();
+
+    explicit Node(QObject* parent = nullptr) : QAbstractTableModel(parent) {}
+
+private:
+    enum Roles
     {
-        valueRole = Qt::UserRole + 1,
-        idRole
+        idRole = Qt::UserRole + 1
     };
-public slots:
-    void AddNode(const int &value);
+    int count = 1;
 };

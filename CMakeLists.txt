@@ -17,6 +17,8 @@ file(GLOB_RECURSE HEADERS "source/*.h")
 
 qt_add_executable(appStateMachine
     main.cpp
+        ${SOURCES}
+        ${HEADERS}
 )
 
 target_include_directories(appStateMachine PRIVATE

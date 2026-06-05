@@ -1,3 +1,18 @@
 #include "UserController.h"
 
-Node* UserController::GetNode() {return node;}
+
+UserController::~UserController()
+{
+
+}
+
+UserController::UserController(QObject* parent)
+    : QObject(parent),
+      node(new Node(this))
+{ 
+}
+
+void UserController::AddNode()
+{
+    node->AddNode();
+}

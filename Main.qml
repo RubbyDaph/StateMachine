@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
 import QtQuick.Window
+import StateMachine 1.0
 
 Window {
     id: root
@@ -14,6 +15,10 @@ Window {
     property color baseColor: "#D9D9D9"
 
     property var circles: []
+
+    UserController{
+        id: userController
+    }
 
     RowLayout{
         id: mainLayout
@@ -61,6 +66,7 @@ Window {
                     anchors.fill: parent
                     onClicked: (mouse) =>{
                         graphCanvas.addCircle(mouse.x, mouse.y, 20)
+                        userController.AddNode()
                     }
 
                 }
@@ -84,12 +90,51 @@ Window {
                 Layout.preferredHeight: Layout.prefferedWidth * 1
                 Layout.minimumWidth: 246
                 Layout.minimumHeight: 246
-                ListView{
-                    id: mainList
-                    ListView{
-                        id: cellList
+                
+                HorizontalHeaderView{
+                    id: horizontalHeader
+                    height: verticalHeader.width
+                    movableColumns: false
+                    anchors.top: parent.top
+                    anchors.left: matrixTable.left
+                    syncView: matrixTable
+                    clip: true
+                }
 
+                VerticalHeaderView{
+                    id: verticalHeader
+                    movableRows: false
+                    anchors.top: matrixTable.top
+                    anchors.left: parent.left
+                    syncView: matrixTable
+                    clip: true
+                }
+
+                TableView{
+                    id: matrixTable
+                    anchors.top: horizontalHeader.bottom
+                    anchors.left: verticalHeader.right
+                    anchors.bottom: parent.bottom
+                    anchors.right: parent.right
+                    clip: true 
+                    
+                    model: userController.node
+
+                    delegate: Rectangle{
+
+                        implicitWidth: matrixTable.columns > 0 ? matrixTable.width / matrixTable.columns : 32
+                        implicitHeight: matrixTable.rows > 0 ? matrixTable.height / matrixTable.rows : 32 
+                        border.width: 1
+                        border.color: "#6FAD88"
+                        color: "#eeeeee"
+
+                        Text{
+                            anchors.centerIn: parent
+                            text: display
+                            color: "black"
+                        }
                     }
+
                 }
             }
             Rectangle{

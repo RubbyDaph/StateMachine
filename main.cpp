@@ -2,10 +2,13 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include<QDir>
+#include "UserController.h"
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
+
+    qmlRegisterType<UserController>("StateMachine", 1, 0, "UserController");
 
     QQmlApplicationEngine engine;
     QObject::connect(

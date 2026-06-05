@@ -5,12 +5,12 @@
 class UserController : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(Node* node READ GetNode() CONSTANT)
-
+    Q_PROPERTY(Node* node READ GetNode CONSTANT)
 public:
-    Q_INVOKABLE Node* GetNode();
     explicit UserController(QObject *parent = nullptr);
-
+    ~UserController();
+    Q_INVOKABLE Node* GetNode() const {return node;}
+    Q_INVOKABLE void AddNode();
 private:
     Node* node;
 };
