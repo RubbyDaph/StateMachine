@@ -19,7 +19,7 @@ Window {
     UserController{
         id: userController
     }
-
+    
     RowLayout{
         id: mainLayout
         anchors.fill: parent
@@ -62,11 +62,55 @@ Window {
                     requestPaint()
                 }
 
+                property int id_from: -1;
+                property int id_to: -1;
+                property int selected: 0;
                 MouseArea {
                     anchors.fill: parent
                     onClicked: (mouse) =>{
-                        graphCanvas.addCircle(mouse.x, mouse.y, 20)
-                        userController.AddNode()
+                        if(graphOptions.nodeCreate == true)
+                        {
+                            graphCanvas.addCircle(mouse.x, mouse.y, 20)
+                            userController.AddNode()
+                        }
+                        else if(graphOptions.connectionCreate == true)
+                        {
+                            for(var i = 0; i < root.circles.length; i++)
+                            {
+                                var circle = root.circles[i];
+                                var dx = mouse.x - circle.x;
+                                var dy = mouse.y - circle.y
+                                var distance = Math.sqrt(dx * dx + dy * dy);
+                                if(distance <= circle.radius)
+                                {
+                                    graphCanvas.id_from = i + 1;
+                                    graphCanvas.selected = 1;
+                                }
+                                if(graphCanvas.selected == 1 && circle != id_from - 1)
+                                {
+                                    if(distance <= circle.radius)
+                                    {
+                                        graphCanvas.id_to = i + 1;
+                                        graphCanvas.selected = 2;
+                                    }
+                                }
+                                else
+                                {
+                                    graphCanvas.id_from = -1;
+                                    graphCanvas.id_to = -1;
+                                    graphCanvas.selected = 0;
+                                }
+                                if(graphCanvas.selected == 2)
+                                {
+                                    userController.MakeConnection(graphCanvas.id_from, graphCanvas.id_to, 0);
+                                }
+
+                            }
+                        }
+                        else if(graphOptions.nodeEdit == true)
+                        {
+
+                        }
                     }
 
                 }
@@ -87,18 +131,32 @@ Window {
                 color: root.baseColor
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                Layout.preferredHeight: Layout.prefferedWidth * 1
+                Layout.preferredHeight: Layout.preferredWidthChanged * 1
                 Layout.minimumWidth: 246
                 Layout.minimumHeight: 246
                 
+                Rectangle{
+                    anchors.left: parent.left
+                    anchors.right: matrixTable.left
+                    anchors.top: parent.top
+                    anchors.bottom: matrixTable.top
+                    border.width: 1
+                    border.color: "#6FAD88"
+                    color: "#D9D9D9"
+                }
+                
+
                 HorizontalHeaderView{
                     id: horizontalHeader
                     height: verticalHeader.width
                     movableColumns: false
                     anchors.top: parent.top
                     anchors.left: matrixTable.left
-                    syncView: matrixTable
                     clip: true
+
+                    delegate: HeaderDelegate{
+                    } 
+                    syncView: matrixTable
                 }
 
                 VerticalHeaderView{
@@ -106,8 +164,11 @@ Window {
                     movableRows: false
                     anchors.top: matrixTable.top
                     anchors.left: parent.left
-                    syncView: matrixTable
                     clip: true
+
+                    delegate: HeaderDelegate{
+                    }
+                    syncView: matrixTable
                 }
 
                 TableView{
@@ -142,26 +203,49 @@ Window {
                 color: root.baseColor
                 Layout.fillWidth: true
                 Layout.minimumHeight: 163
+                property bool nodeCreate: true;
+                property bool connectionCreate: false
+                property bool nodeEdit: false
                 ColumnLayout{
                     anchors.fill: parent
                     spacing: 5
                     CustomButton{
+                        id: createNodeButton
                         buttonText:"Create Node"
                         Layout.fillWidth: true
                         Layout.rightMargin: 50
                         Layout.leftMargin: 50
+                        onClicked: {
+                            console.log("Create button pressed")
+                            graphOptions.nodeCreate = true
+                            graphOptions.connectionCreate = false 
+                            graphOptions.nodeEdit = false 
+                        }
                     }
                     CustomButton{
+                        id: createConnectionButton
                         buttonText: "Create Connection"
                         Layout.fillWidth: true
                         Layout.rightMargin: 50
                         Layout.leftMargin: 50
+                        onClicked: {
+                            console.log("Connection create button pressed")
+                            graphOptions.nodeCreate = false
+                            graphOptions.connectionCreate = true 
+                            graphOptions.nodeEdit = false 
+                        }
                     }
                     CustomButton{
+                        id: editNodeButton
                         buttonText: "Edit Node"
                         Layout.fillWidth: true
                         Layout.rightMargin: 50
                         Layout.leftMargin: 50
+                        onClicked: {
+                            graphOptions.nodeCreate = false
+                            graphOptions.connectionCreate = false 
+                            graphOptions.nodeEdit = true
+                        }
                     }
                 }
             }

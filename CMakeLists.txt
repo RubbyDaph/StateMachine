@@ -31,6 +31,7 @@ qt_add_qml_module(appStateMachine
     QML_FILES
         Main.qml
         CustomButton.qml
+        HeaderDelegate.qml
 )
 
 target_link_libraries(appStateMachine PRIVATE

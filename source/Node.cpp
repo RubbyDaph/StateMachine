@@ -82,4 +82,9 @@ void Node::AddNode()
     count++;
     endResetModel();
 }
- 
+
+
+void Node::MakeConnection(int id_from, int id_to, Direction directionType)
+{
+   qDebug() << "MakeConnection called"; 
+}
