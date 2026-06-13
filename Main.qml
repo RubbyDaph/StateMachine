@@ -15,6 +15,7 @@ Window {
     property color baseColor: "#D9D9D9"
 
     property var circles: []
+    property var connections: []
 
     UserController{
         id: userController
@@ -40,7 +41,8 @@ Window {
                     var ctx = getContext("2d");
 
                     ctx.clearRect(0, 0, graphCanvas.width, graphCanvas.height)
-
+                    
+                    // circle draw
                     for(var i = 0; i < root.circles.length; i++){
                         var circle = circles[i]
                         ctx.beginPath()
@@ -56,10 +58,43 @@ Window {
                         ctx.textBaseline = "middle"
                         ctx.fillText((i+1).toString(), circle.x, circle.y);
                     }
+                    // connection draw
+                    for(var i = 0; i < root.connections.length; i++)
+                    {
+                        var connection = connections[i];
+                        var circle_from = root.circles[connection.id_from]; 
+                        var circle_to = root.circles[connection.id_to]; 
+                         
+                        var dx = circle_to.x - circle_from.x;
+                        var dy = circle_to.y - circle_from.y;
+
+                        var d = Math.sqrt(dx * dx + dy * dy);
+
+                        var nx = dx / d;
+                        var ny = dy / d;
+
+                        var start_x = circle_from.x + nx * circle_from.radius;
+                        var end_x = circle_to.x - nx * circle_to.radius;
+
+                        var start_y = circle_from.y + ny * circle_from.radius;
+                        var end_y = circle_to.y - ny * circle_to.radius;
+
+
+                        ctx.beginPath();
+                        ctx.moveTo(start_x, start_y);
+                        ctx.lineTo(end_x, end_y);
+                        ctx.stroke();
+                    }
                 }
                 function addCircle(x, y , radius){
                     root.circles.push({x: x, y: y, radius: radius});
                     requestPaint()
+                }
+
+                function addConnection(id_from, id_to, connectionType)
+                {
+                    root.connections.push({id_from: id_from, id_to: id_to, type: connectionType});
+                    requestPaint();
                 }
 
                 property int id_from: -1;
@@ -68,43 +103,43 @@ Window {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: (mouse) =>{
-                        if(graphOptions.nodeCreate == true)
+                        if(graphOptions.nodeCreate === true)
                         {
                             graphCanvas.addCircle(mouse.x, mouse.y, 20)
                             userController.AddNode()
                         }
-                        else if(graphOptions.connectionCreate == true)
+                        else if(graphOptions.connectionCreate === true)
                         {
+                            var clickedId = -1;
                             for(var i = 0; i < root.circles.length; i++)
                             {
                                 var circle = root.circles[i];
                                 var dx = mouse.x - circle.x;
                                 var dy = mouse.y - circle.y
                                 var distance = Math.sqrt(dx * dx + dy * dy);
+                                
                                 if(distance <= circle.radius)
                                 {
-                                    graphCanvas.id_from = i + 1;
-                                    graphCanvas.selected = 1;
+                                    clickedId = i + 1;
+                                    break;
                                 }
-                                if(graphCanvas.selected == 1 && circle != id_from - 1)
+                            }
+                            if(graphCanvas.selected === 0)
+                            {
+                                graphCanvas.id_from = clickedId;
+                                graphCanvas.selected = 1;
+                            }
+                            else if(graphCanvas.selected === 1)
+                            {
+                                if(clickedId !== graphCanvas.id_from)
                                 {
-                                    if(distance <= circle.radius)
-                                    {
-                                        graphCanvas.id_to = i + 1;
-                                        graphCanvas.selected = 2;
-                                    }
-                                }
-                                else
-                                {
+                                    graphCanvas.id_to = clickedId;
+                                    userController.MakeConnection(graphCanvas.id_from, graphCanvas.id_to, 0);
+                                    graphCanvas.addConnection(graphCanvas.id_from - 1, graphCanvas.id_to - 1, 0);
+                                    graphCanvas.selected = 0;
                                     graphCanvas.id_from = -1;
                                     graphCanvas.id_to = -1;
-                                    graphCanvas.selected = 0;
                                 }
-                                if(graphCanvas.selected == 2)
-                                {
-                                    userController.MakeConnection(graphCanvas.id_from, graphCanvas.id_to, 0);
-                                }
-
                             }
                         }
                         else if(graphOptions.nodeEdit == true)

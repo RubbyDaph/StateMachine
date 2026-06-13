@@ -86,5 +86,5 @@ void Node::AddNode()
 
 void Node::MakeConnection(int id_from, int id_to, Direction directionType)
 {
-   qDebug() << "MakeConnection called";
+    
 }
