@@ -25,12 +25,23 @@ Window {
     // used in button graphOptions section
     // and in MouseArea inside canvasRect
     enum ModeType{
+        None,
         NodeCreate,
         ConnectionCreate,
         NodeEdit
     }
 
-    property int modeType: ModeType.NodeCreate
+    property int modeType: ModeType.None
+    
+    // types for connection
+    // used in graphOptions
+    // and in draw section for connections and also in function for adding connection
+    enum ConnectionOptions{
+        TwoWay,
+        OneWay
+    }
+
+    property int connectionOption: Main.ConnectionOptions.TwoWay
     
     RowLayout{
         id: mainLayout
@@ -140,6 +151,7 @@ Window {
                                 graphCanvas.selected = 0;
                                 graphCanvas.id_from = -1;
                                 graphCanvas.id_to = -1;
+                                return;
                             }
                             if(graphCanvas.selected === 0)
                             {
@@ -151,8 +163,8 @@ Window {
                                 if(clickedId !== graphCanvas.id_from)
                                 {
                                     graphCanvas.id_to = clickedId;
-                                    userController.MakeConnection(graphCanvas.id_from, graphCanvas.id_to, 0);
-                                    graphCanvas.addConnection(graphCanvas.id_from - 1, graphCanvas.id_to - 1, 0);
+                                    userController.MakeConnection(graphCanvas.id_from, graphCanvas.id_to, root.connectionOption);
+                                    graphCanvas.addConnection(graphCanvas.id_from - 1, graphCanvas.id_to - 1, root.connectionOption);
                                     graphCanvas.selected = 0;
                                     graphCanvas.id_from = -1;
                                     graphCanvas.id_to = -1;
@@ -256,43 +268,22 @@ Window {
                 Layout.fillWidth: true
                 Layout.minimumHeight: 163
 
-
-                ColumnLayout{
+                Loader{
+                    id: graphOptionsLoader
                     anchors.fill: parent
-                    spacing: 5
-                    CustomButton{
-                        id: createNodeButton
-                        buttonText:"Create Node"
-                        Layout.fillWidth: true
-                        Layout.rightMargin: 50
-                        Layout.leftMargin: 50
-                        onClicked: {
-                            console.log("Create button pressed")
-                            root.modeType = Main.ModeType.NodeCreate
+
+                    sourceComponent:{
+                        if(root.modeType === Main.ModeType.ConnectionCreate)
+                        {
+                            return connectionCreateModeComponent
                         }
-                    }
-                    CustomButton{
-                        id: createConnectionButton
-                        buttonText: "Create Connection"
-                        Layout.fillWidth: true
-                        Layout.rightMargin: 50
-                        Layout.leftMargin: 50
-                        onClicked: {
-                            console.log("Connection create button pressed")
-                            root.modeType = Main.ModeType.ConnectionCreate
+                        if(root.modeType === Main.ModeType.NodeEdit)
+                        {
+                            return editNodeModeComponent
                         }
+                        return defaultModeComponent
                     }
-                    CustomButton{
-                        id: editNodeButton
-                        buttonText: "Edit Node"
-                        Layout.fillWidth: true
-                        Layout.rightMargin: 50
-                        Layout.leftMargin: 50
-                        onClicked: {
-                            root.modeType = Main.ModeType.NodeEdit
-                        }
-                    }
-                }
+                } 
             }
             Rectangle{
                 id: fileOptions
@@ -302,4 +293,51 @@ Window {
             }
         }
     }
+    Component{
+        id: defaultModeComponent
+        DefaultMode {
+            onNodeCreateClicked: {
+                root.modeType = Main.ModeType.NodeCreate
+            }
+
+            onConnectionCreateClicked: {
+                root.modeType = Main.ModeType.ConnectionCreate
+            }
+
+            onEditNodeClicked: {
+                root.modeType = Main.ModeType.NodeEdit
+            }
+
+            onFreeHandClicked: {
+                root.modeType = Main.ModeType.None
+            }
+        }
+    }
+    Component {
+      id: connectionCreateModeComponent
+
+      ConnectionCreateMode {
+          onExitConnectionCreate: {
+              root.modeType = Main.ModeType.None
+          }
+
+          onOneWayClicked: {
+              root.connectionType = Main.ConnectionOptions.TwoWay 
+          }
+
+          onTwoWayClicked: {
+              root.connectionType = Main.ConnectionOptions.OneWay
+          }
+      }
+  }
+
+  Component {
+      id: editNodeModeComponent
+
+      EditNodeMode {
+          onExitEditNode: {
+              root.modeType = Main.ModeType.None
+          }
+      }
+  }
 }

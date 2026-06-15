@@ -30,8 +30,11 @@ qt_add_qml_module(appStateMachine
     VERSION 1.0
     QML_FILES
         Main.qml
-        CustomButton.qml
-        HeaderDelegate.qml
+        qmlComponents/CustomButton.qml
+        qmlComponents/HeaderDelegate.qml
+        qmlComponents/DefaultMode.qml
+        qmlComponents/EditNodeMode.qml
+        qmlComponents/ConnectionCreateMode.qml
 )
 
 target_link_libraries(appStateMachine PRIVATE
