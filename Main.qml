@@ -20,6 +20,17 @@ Window {
     UserController{
         id: userController
     }
+
+    // types for creation of nodes and connections and editing nodes
+    // used in button graphOptions section
+    // and in MouseArea inside canvasRect
+    enum ModeType{
+        NodeCreate,
+        ConnectionCreate,
+        NodeEdit
+    }
+
+    property int modeType: ModeType.NodeCreate
     
     RowLayout{
         id: mainLayout
@@ -103,12 +114,12 @@ Window {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: (mouse) =>{
-                        if(graphOptions.nodeCreate === true)
+                        if(root.modeType === Main.ModeType.NodeCreate)
                         {
                             graphCanvas.addCircle(mouse.x, mouse.y, 20)
                             userController.AddNode()
                         }
-                        else if(graphOptions.connectionCreate === true)
+                        else if(root.modeType === Main.ModeType.ConnectionCreate)
                         {
                             var clickedId = -1;
                             for(var i = 0; i < root.circles.length; i++)
@@ -148,7 +159,7 @@ Window {
                                 }
                             }
                         }
-                        else if(graphOptions.nodeEdit == true)
+                        else if(root.modeType === Main.ModeType.NodeEdit)
                         {
 
                         }
@@ -244,9 +255,8 @@ Window {
                 color: root.baseColor
                 Layout.fillWidth: true
                 Layout.minimumHeight: 163
-                property bool nodeCreate: true;
-                property bool connectionCreate: false
-                property bool nodeEdit: false
+
+
                 ColumnLayout{
                     anchors.fill: parent
                     spacing: 5
@@ -258,9 +268,7 @@ Window {
                         Layout.leftMargin: 50
                         onClicked: {
                             console.log("Create button pressed")
-                            graphOptions.nodeCreate = true
-                            graphOptions.connectionCreate = false 
-                            graphOptions.nodeEdit = false 
+                            root.modeType = Main.ModeType.NodeCreate
                         }
                     }
                     CustomButton{
@@ -271,9 +279,7 @@ Window {
                         Layout.leftMargin: 50
                         onClicked: {
                             console.log("Connection create button pressed")
-                            graphOptions.nodeCreate = false
-                            graphOptions.connectionCreate = true 
-                            graphOptions.nodeEdit = false 
+                            root.modeType = Main.ModeType.ConnectionCreate
                         }
                     }
                     CustomButton{
@@ -283,9 +289,7 @@ Window {
                         Layout.rightMargin: 50
                         Layout.leftMargin: 50
                         onClicked: {
-                            graphOptions.nodeCreate = false
-                            graphOptions.connectionCreate = false 
-                            graphOptions.nodeEdit = true
+                            root.modeType = Main.ModeType.NodeEdit
                         }
                     }
                 }
