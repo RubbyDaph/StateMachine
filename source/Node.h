@@ -8,14 +8,9 @@ using std::vector;
 
 enum class Direction{
     BOTH_WAYS = 0,
-    TO_NODE,
-    FROM_NODE
+    ONE_WAY
 };
 
-struct Connection{
-    int id;
-    Direction direction;
-};
 
 
 
@@ -26,12 +21,25 @@ class Node : public QAbstractTableModel
     struct NodeItem
     {
         int id;
-        vector<Connection> connections;
 
         NodeItem(int count) : id(count) {};
     };
+
+    struct Connection{
+        int id_from;
+        int id_to;
+        Direction direction;
+
+        Connection(int id_from, int id_to, Direction directionType)
+        {
+            this->id_from = id_from;
+            this->id_to = id_to;
+            this->direction = directionType;
+        }
+    };
     QList<NodeItem> NodeList;
     QList<QList<int>> matrix;
+    QList<Connection> connections;
 public:
     int rowCount(const QModelIndex &parent) const override;
     int columnCount(const QModelIndex &parent) const override;

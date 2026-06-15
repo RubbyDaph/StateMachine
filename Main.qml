@@ -124,6 +124,12 @@ Window {
                                     break;
                                 }
                             }
+                            if(clickedId === -1)
+                            {
+                                graphCanvas.selected = 0;
+                                graphCanvas.id_from = -1;
+                                graphCanvas.id_to = -1;
+                            }
                             if(graphCanvas.selected === 0)
                             {
                                 graphCanvas.id_from = clickedId;
