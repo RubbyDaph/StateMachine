@@ -91,21 +91,52 @@ Window {
                         var dy = circle_to.y - circle_from.y;
 
                         var d = Math.sqrt(dx * dx + dy * dy);
-
+                        
+                        if(d === 0)
+                        {
+                            continue;
+                        }
+                        
                         var nx = dx / d;
                         var ny = dy / d;
-
+                        
                         var start_x = circle_from.x + nx * circle_from.radius;
                         var end_x = circle_to.x - nx * circle_to.radius;
 
                         var start_y = circle_from.y + ny * circle_from.radius;
                         var end_y = circle_to.y - ny * circle_to.radius;
 
-
                         ctx.beginPath();
                         ctx.moveTo(start_x, start_y);
                         ctx.lineTo(end_x, end_y);
                         ctx.stroke();
+                        
+                        // arrow draw section
+                        // if connectionType is one way we are gonna draw an arrow
+                        if(connection.type == Main.ConnectionOptions.OneWay)
+                        {
+                            var arrowLength = 12
+                            var arrowHalfWidth = 6
+                            var perpendicularX = -ny;
+                            var perpendicularY = nx;
+
+                            var baseX = end_x - nx * arrowLength
+                            var baseY = end_y - ny * arrowLength
+
+                            var leftX = baseX + perpendicularX * arrowHalfWidth
+                            var leftY = baseY + perpendicularY * arrowHalfWidth
+
+                            var rightX = baseX - perpendicularX * arrowHalfWidth 
+                            var rightY = baseY - perpendicularY * arrowHalfWidth
+
+                            ctx.beginPath();
+                            ctx.moveTo(end_x, end_y);
+                            ctx.lineTo(leftX, leftY);
+                            ctx.lineTo(rightX, rightY);
+                            ctx.closePath();
+                            ctx.fillStyle = "black"
+                            ctx.fill();
+                        }
                     }
                 }
                 function addCircle(x, y , radius){
@@ -174,6 +205,10 @@ Window {
                         else if(root.modeType === Main.ModeType.NodeEdit)
                         {
 
+                        }
+                        else if(root.modeType === Main.ModeType.None)
+                        {
+                             
                         }
                     }
 
@@ -322,11 +357,11 @@ Window {
           }
 
           onOneWayClicked: {
-              root.connectionType = Main.ConnectionOptions.TwoWay 
+              root.connectionOption = Main.ConnectionOptions.OneWay 
           }
 
           onTwoWayClicked: {
-              root.connectionType = Main.ConnectionOptions.OneWay
+              root.connectionOption = Main.ConnectionOptions.TwoWay
           }
       }
   }

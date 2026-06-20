@@ -106,6 +106,7 @@ void Node::MakeConnection(int id_from, int id_to, Direction directionType)
         case Direction::ONE_WAY:
         {
             matrix[fromIndex][toIndex] = 1;
+            if(matrix[toIndex][fromIndex] == 1) break;
             matrix[toIndex][fromIndex] = 0;
             break;
         }
