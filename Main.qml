@@ -31,7 +31,7 @@ Window {
         NodeEdit
     }
 
-    property int modeType: ModeType.None
+    property int modeType: Main.ModeType.None
     
     // types for connection
     // used in graphOptions
@@ -74,7 +74,6 @@ Window {
                         ctx.fill()
                         ctx.stroke()
 
-                        ctx.font = (circle.radius) + "px Arial";
                         ctx.fillStyle = "black"
                         ctx.textAlign = "center"
                         ctx.textBaseline = "middle"
@@ -146,6 +145,31 @@ Window {
 
                 function addConnection(id_from, id_to, connectionType)
                 {
+                    for(var i = 0; i < root.connections.length; i++)
+                    {
+                        if(connectionType === Main.ConnectionOptions.OneWay)
+                        {
+                            if(root.connections[i].id_from === id_from && root.connections[i].id_to === id_to)
+                            {
+                                requestPaint();
+                                return
+                            }
+                        }
+                        else
+                        {
+                            var reverseDirection = root.connetions[i].id_from === id_to && root.connections[i].id_to === id_from
+                            var sameDirection = root.connections[i].id_from === id_from && root.connections[i].id_to === id_to
+                            if(reverseDirection || sameDirection)
+                            {
+                                requestPaint();
+                                return
+                            }
+                        }
+                        
+                        // TODO: when there is two one way connection
+                        // between two nodes facing at each other make it TwoWay connection
+                        // and delete non used connections
+                    }
                     root.connections.push({id_from: id_from, id_to: id_to, type: connectionType});
                     requestPaint();
                 }
@@ -194,8 +218,10 @@ Window {
                                 if(clickedId !== graphCanvas.id_from)
                                 {
                                     graphCanvas.id_to = clickedId;
-                                    userController.MakeConnection(graphCanvas.id_from, graphCanvas.id_to, root.connectionOption);
-                                    graphCanvas.addConnection(graphCanvas.id_from - 1, graphCanvas.id_to - 1, root.connectionOption);
+                                    if(userController.MakeConnection(graphCanvas.id_from, graphCanvas.id_to, root.connectionOption))
+                                    {
+                                        graphCanvas.addConnection(graphCanvas.id_from - 1, graphCanvas.id_to - 1, root.connectionOption);
+                                    }
                                     graphCanvas.selected = 0;
                                     graphCanvas.id_from = -1;
                                     graphCanvas.id_to = -1;

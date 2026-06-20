@@ -48,7 +48,7 @@ public:
     QHash<int, QByteArray> roleNames() const override;
 
     void AddNode();
-    Q_INVOKABLE void MakeConnection(int id_from, int id_to, Direction directionType);
+    Q_INVOKABLE bool MakeConnection(int id_from, int id_to, Direction directionType);
 
     explicit Node(QObject* parent = nullptr) : QAbstractTableModel(parent) {}
 

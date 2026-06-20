@@ -11,7 +11,7 @@ public:
     ~UserController();
     Q_INVOKABLE Node* GetNode() const {return node;}
     Q_INVOKABLE void AddNode();
-    Q_INVOKABLE void MakeConnection(int id_from, int id_to, Direction directionType);
+    Q_INVOKABLE bool MakeConnection(int id_from, int id_to, Direction directionType);
 private:
     Node* node;
 };

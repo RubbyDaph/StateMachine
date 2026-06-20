@@ -84,14 +84,30 @@ void Node::AddNode()
 }
 
 
-void Node::MakeConnection(int id_from, int id_to, Direction directionType)
+bool Node::MakeConnection(int id_from, int id_to, Direction directionType)
 {
-   if(id_from <= 0 || id_to <= 0) return;
+   if(id_from <= 0 || id_to <= 0) return false;
 
     int fromIndex = id_from - 1;
     int toIndex = id_to - 1;
 
-    if(fromIndex >= matrix.size() || toIndex >= matrix.size()) return;
+    if(fromIndex >= matrix.size() || toIndex >= matrix.size()) return false;
+    
+    for(const Connection& connection : connections)
+    {
+        if(directionType == Direction::BOTH_WAYS)
+        {
+            if((connection.id_from == id_from && connection.id_to == id_to) ||
+                (connection.id_from == id_to && connection.id_to == id_from))
+            {
+                return false;
+            }
+        }
+        else
+        {
+            if(connection.id_from == id_from && connection.id_to == id_to) return false;
+        }
+    }
 
     connections.append({id_from, id_to, directionType});
 
@@ -113,4 +129,5 @@ void Node::MakeConnection(int id_from, int id_to, Direction directionType)
     }
     emit dataChanged(index(fromIndex, toIndex), index(fromIndex, toIndex));
     emit dataChanged(index(toIndex, fromIndex), index(toIndex, fromIndex));
+    return true;
 }
