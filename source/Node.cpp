@@ -93,8 +93,9 @@ bool Node::MakeConnection(int id_from, int id_to, Direction directionType)
 
     if(fromIndex >= matrix.size() || toIndex >= matrix.size()) return false;
     
-    for(const Connection& connection : connections)
+    for(auto it = connections.begin(); it != connections.end(); ++it)
     {
+        Connection& connection = *it;
         if(directionType == Direction::BOTH_WAYS)
         {
             if((connection.id_from == id_from && connection.id_to == id_to) ||
@@ -106,6 +107,12 @@ bool Node::MakeConnection(int id_from, int id_to, Direction directionType)
         else
         {
             if(connection.id_from == id_from && connection.id_to == id_to) return false;
+            else if(connection.id_from == id_to && connection.id_to == id_from)
+            {
+                connections.erase(it);
+                directionType = Direction::BOTH_WAYS; 
+                break;
+            }
         }
     }
 

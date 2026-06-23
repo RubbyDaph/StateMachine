@@ -8,8 +8,6 @@ Window {
     id: root
     minimumWidth: 820
     minimumHeight: 650
-    maximumWidth: 820
-    maximumHeight: 650
     visible: true
     color: "#6FAD88"
     property color baseColor: "#D9D9D9"
@@ -147,18 +145,24 @@ Window {
                 {
                     for(var i = 0; i < root.connections.length; i++)
                     {
+                        var reverseDirection = root.connections[i].id_from === id_to && root.connections[i].id_to === id_from
+                        var sameDirection = root.connections[i].id_from === id_from && root.connections[i].id_to === id_to
                         if(connectionType === Main.ConnectionOptions.OneWay)
                         {
-                            if(root.connections[i].id_from === id_from && root.connections[i].id_to === id_to)
+                            if(sameDirection)
                             {
                                 requestPaint();
                                 return
                             }
+                            else if(reverseDirection)
+                            {
+                                root.connections.splice(i, 1)
+                                connectionType = Main.ConnectionOptions.TwoWay
+                                break
+                            }
                         }
                         else
                         {
-                            var reverseDirection = root.connetions[i].id_from === id_to && root.connections[i].id_to === id_from
-                            var sameDirection = root.connections[i].id_from === id_from && root.connections[i].id_to === id_to
                             if(reverseDirection || sameDirection)
                             {
                                 requestPaint();
