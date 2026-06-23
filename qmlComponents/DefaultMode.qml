@@ -34,16 +34,6 @@ Item{
             }
         }
         CustomButton{
-            id:editNodeButton
-            buttonText:"Edit node"
-            Layout.fillWidth: true
-            Layout.rightMargin: 50
-            Layout.leftMargin: 50
-            onClicked:{
-               root.editNodeClicked()
-            } 
-        }
-        CustomButton{
             id: defaultMode
             buttonText:"Free hand"
             Layout.fillWidth: true

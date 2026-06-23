@@ -33,7 +33,6 @@ qt_add_qml_module(appStateMachine
         qmlComponents/CustomButton.qml
         qmlComponents/HeaderDelegate.qml
         qmlComponents/DefaultMode.qml
-        qmlComponents/EditNodeMode.qml
         qmlComponents/ConnectionCreateMode.qml
 )
 

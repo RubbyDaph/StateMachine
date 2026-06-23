@@ -25,8 +25,7 @@ Window {
     enum ModeType{
         None,
         NodeCreate,
-        ConnectionCreate,
-        NodeEdit
+        ConnectionCreate
     }
 
     property int modeType: Main.ModeType.None
@@ -169,10 +168,6 @@ Window {
                                 return
                             }
                         }
-                        
-                        // TODO: when there is two one way connection
-                        // between two nodes facing at each other make it TwoWay connection
-                        // and delete non used connections
                     }
                     root.connections.push({id_from: id_from, id_to: id_to, type: connectionType});
                     requestPaint();
@@ -231,10 +226,6 @@ Window {
                                     graphCanvas.id_to = -1;
                                 }
                             }
-                        }
-                        else if(root.modeType === Main.ModeType.NodeEdit)
-                        {
-
                         }
                         else if(root.modeType === Main.ModeType.None)
                         {
@@ -342,10 +333,6 @@ Window {
                         {
                             return connectionCreateModeComponent
                         }
-                        if(root.modeType === Main.ModeType.NodeEdit)
-                        {
-                            return editNodeModeComponent
-                        }
                         return defaultModeComponent
                     }
                 } 
@@ -368,11 +355,6 @@ Window {
             onConnectionCreateClicked: {
                 root.modeType = Main.ModeType.ConnectionCreate
             }
-
-            onEditNodeClicked: {
-                root.modeType = Main.ModeType.NodeEdit
-            }
-
             onFreeHandClicked: {
                 root.modeType = Main.ModeType.None
             }
@@ -392,16 +374,6 @@ Window {
 
           onTwoWayClicked: {
               root.connectionOption = Main.ConnectionOptions.TwoWay
-          }
-      }
-  }
-
-  Component {
-      id: editNodeModeComponent
-
-      EditNodeMode {
-          onExitEditNode: {
-              root.modeType = Main.ModeType.None
           }
       }
   }
