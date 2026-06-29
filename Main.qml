@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
+import QtQuick.Dialogs
 import QtQuick.Window
 import StateMachine 1.0
 
@@ -17,6 +18,72 @@ Window {
 
     UserController{
         id: userController
+    }
+
+    FileDialog {
+        id: saveGraphDialog
+        title: "Save graph"
+        fileMode: FileDialog.SaveFile
+        defaultSuffix: "json"
+        nameFilters: ["JSON files (*.json)", "All files (*)"]
+
+        onAccepted: {
+            if(!userController.SaveGraph(selectedFile))
+            {
+                console.log(userController.LastError())
+            }
+        }
+    }
+
+    FileDialog {
+        id: loadGraphDialog
+        title: "Load graph"
+        fileMode: FileDialog.OpenFile
+        nameFilters: ["JSON files (*.json)", "All files (*)"]
+
+        onAccepted: {
+            if(!userController.LoadGraph(selectedFile))
+            {
+                console.log(userController.LastError())
+                return
+            }
+            root.syncCanvasFromController()
+        }
+    }
+
+    function clearCanvasGraph()
+    {
+        root.circles = []
+        root.connections = []
+        graphCanvas.selected = 0
+        graphCanvas.id_from = -1
+        graphCanvas.id_to = -1
+        graphCanvas.requestPaint()
+    }
+
+    function syncCanvasFromController()
+    {
+        root.clearCanvasGraph()
+
+        var nodes = userController.GraphNodes()
+        for(var i = 0; i < nodes.length; i++)
+        {
+            var node = nodes[i]
+            root.circles.push({x: node.x, y: node.y, radius: 20})
+        }
+
+        var connections = userController.GraphConnections()
+        for(var j = 0; j < connections.length; j++)
+        {
+            var connection = connections[j]
+            root.connections.push({
+                id_from: connection.id_from - 1,
+                id_to: connection.id_to - 1,
+                type: connection.direction
+            })
+        }
+
+        graphCanvas.requestPaint()
     }
 
     // types for creation of nodes and connections and editing nodes
@@ -182,7 +249,7 @@ Window {
                         if(root.modeType === Main.ModeType.NodeCreate)
                         {
                             graphCanvas.addCircle(mouse.x, mouse.y, 20)
-                            userController.AddNode()
+                            userController.AddNode(mouse.x, mouse.y)
                         }
                         else if(root.modeType === Main.ModeType.ConnectionCreate)
                         {
@@ -342,6 +409,43 @@ Window {
                 color: root.baseColor
                 Layout.fillWidth: true
                 Layout.minimumHeight: 181
+                ColumnLayout{
+                    anchors.fill: parent
+                    spacing: 5
+                    id: fileOptionsLayout
+                    CustomButton{
+                        id: saveGraphButton
+                        buttonText:"Save graph"
+                        Layout.fillWidth: true
+                        Layout.rightMargin: 50
+                        Layout.leftMargin: 50
+                        onClicked:{
+                            saveGraphDialog.open()
+                        }
+                        }
+                    CustomButton{
+                        id: loadGraphButton
+                        buttonText:"Load graph"
+                        Layout.fillWidth: true
+                        Layout.rightMargin: 50
+                        Layout.leftMargin: 50
+                        onClicked:{
+                            loadGraphDialog.open()
+                        }
+                    }
+                    CustomButton{
+                        id: clearGraphButton
+                        buttonText:"Clear graph"
+                        Layout.fillWidth: true
+                        Layout.rightMargin: 50
+                        Layout.leftMargin: 50
+                        onClicked:{
+                            userController.ClearGraph()
+                            root.clearCanvasGraph()
+                        }
+                    }
+                    
+                }
             }
         }
     }

@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QAbstractTableModel>
 #include <vector>
+#include "GraphData.h"
 
 using std::vector;
 
@@ -21,8 +22,10 @@ class Node : public QAbstractTableModel
     struct NodeItem
     {
         int id;
+        int x;
+        int y;
 
-        NodeItem(int count) : id(count) {};
+        NodeItem(int count, int X, int Y) : id(count), x(X), y(Y) {};
     };
 
     struct Connection{
@@ -46,8 +49,11 @@ public:
     QVariant data(const QModelIndex &index, int role) const override;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
     QHash<int, QByteArray> roleNames() const override;
+    GraphData collectGraphData() const;
+    void loadGraphData(const GraphData& graphData);
+    void clearGraph();
 
-    void AddNode();
+    void AddNode(int x, int y);
     Q_INVOKABLE bool MakeConnection(int id_from, int id_to, Direction directionType);
 
     explicit Node(QObject* parent = nullptr) : QAbstractTableModel(parent) {}
